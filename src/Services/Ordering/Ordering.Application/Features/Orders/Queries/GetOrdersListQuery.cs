@@ -2,7 +2,7 @@
 using MediatR;
 using Ordering.Application.Contracts.Persistence;
 
-namespace Ordering.Application.Features.Orders.Queries.GetOrdersList;
+namespace Ordering.Application.Features.Orders.Queries;
 
 public class GetOrdersListQuery : IRequest<List<OrdersVm>>
 {
