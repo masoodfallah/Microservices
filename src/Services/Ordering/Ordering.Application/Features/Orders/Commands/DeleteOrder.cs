@@ -7,7 +7,10 @@ namespace Ordering.Application.Features.Orders.Commands;
 
 public static class DeleteOrder
 {
-    public record Command(int Id) : IRequest<Unit>;
+    public record Command : IRequest<Unit>
+    {
+        public int Id { get; set; }
+    }
 
     public class Handler : IRequestHandler<Command, Unit>
     {
@@ -15,12 +18,12 @@ public static class DeleteOrder
         private readonly IMapper _mapper;
         private readonly ILogger<Handler> _logger;
 
-        public Handler(IOrderRepository orderRepository, IMapper mapper, ILogger<Handler> logger)
-        {
-            _orderRepository = orderRepository ?? throw new ArgumentNullException(nameof(orderRepository));
-            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        }
+
+        public Handler(IOrderRepository orderRepository, IMapper mapper, ILogger<Handler> logger) =>
+        (_orderRepository, _mapper, _logger) =
+           (orderRepository ?? throw new ArgumentNullException(nameof(orderRepository)),
+            mapper ?? throw new ArgumentNullException(nameof(mapper)),
+            logger ?? throw new ArgumentNullException(nameof(logger)));
 
         public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
         {

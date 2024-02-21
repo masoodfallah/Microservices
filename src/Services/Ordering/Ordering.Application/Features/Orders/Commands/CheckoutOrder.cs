@@ -11,9 +11,7 @@ namespace Ordering.Application.Features.Orders.Commands;
 
 public static class CheckoutOrder
 {
-    public record Command(CheckoutOrderRequest CheckoutOrder) : IRequest<int>;
-
-    public record CheckoutOrderRequest
+    public record Command() : IRequest<int>
     {
         public string UserName { get; set; }
         public decimal TotalPrice { get; set; }
@@ -52,7 +50,7 @@ public static class CheckoutOrder
 
         public async Task<int> Handle(Command request, CancellationToken cancellationToken)
         {
-            var orderEntity = _mapper.Map<Order>(request.CheckoutOrder);
+            var orderEntity = _mapper.Map<Order>(request);
             var newOrder = await _orderRepository.AddAsync(orderEntity);
 
             _logger.LogInformation($"Order {newOrder.Id} is successfully created.");
@@ -80,15 +78,15 @@ public static class CheckoutOrder
     {
         public Validator()
         {
-            RuleFor(x => x.CheckoutOrder.UserName)
+            RuleFor(x => x.UserName)
                 .NotEmpty().WithMessage("{UserName} is required")
                 .NotNull()
                 .MaximumLength(50).WithMessage("{UserName} must not exceed 50 characters.");
 
-            RuleFor(x => x.CheckoutOrder.Email)
+            RuleFor(x => x.Email)
                 .NotEmpty().WithMessage("{Email} is required");
 
-            RuleFor(x => x.CheckoutOrder.TotalPrice)
+            RuleFor(x => x.TotalPrice)
                .NotEmpty().WithMessage("{TotalPrice} is required")
                .GreaterThan(0).WithMessage("{TotalPrice} should be greater than zero");
         }

@@ -9,9 +9,7 @@ namespace Ordering.Application.Features.Orders.Commands;
 
 public static class UpdateOrder
 {
-    public record Command(UpdateOrderRequest UpdateOrder) : IRequest<Unit>;
-
-    public record UpdateOrderRequest
+    public record Command : IRequest<Unit>
     {
         public int Id { get; set; }
         public string UserName { get; set; }
@@ -49,13 +47,13 @@ public static class UpdateOrder
 
         public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
         {
-            var orderToUpdate = await _orderRepository.GetByIdAsync(request.UpdateOrder.Id);
+            var orderToUpdate = await _orderRepository.GetByIdAsync(request.Id);
             if (orderToUpdate == null)
             {
                 _logger.LogError("Order not exist on database.");
             }
 
-            _mapper.Map(request.UpdateOrder, orderToUpdate, typeof(Command), typeof(Order));
+            _mapper.Map(request, orderToUpdate, typeof(Command), typeof(Order));
 
             await _orderRepository.UpdateAsync(orderToUpdate);
 
@@ -69,15 +67,15 @@ public static class UpdateOrder
     {
         public Validator()
         {
-            RuleFor(x => x.UpdateOrder.UserName)
+            RuleFor(x => x.UserName)
                 .NotEmpty().WithMessage("{UserName} is required")
                 .NotNull()
                 .MaximumLength(50).WithMessage("{UserName} must not exceed 50 characters.");
 
-            RuleFor(x => x.UpdateOrder.Email)
+            RuleFor(x => x.Email)
                 .NotEmpty().WithMessage("{Email} is required");
 
-            RuleFor(x => x.UpdateOrder.TotalPrice)
+            RuleFor(x => x.TotalPrice)
                .NotEmpty().WithMessage("{TotalPrice} is required")
                .GreaterThan(0).WithMessage("{TotalPrice} should be greater than zero");
         }
